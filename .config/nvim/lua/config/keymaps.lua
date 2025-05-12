@@ -54,14 +54,22 @@ keymap.set("n", "<C-S-l>", "<C-w>>")
 keymap.set("n", "<C-S-k>", "<C-w>+")
 keymap.set("n", "<C-S-j>", "<C-w>-")
 
+-- Move lines up/down with Command+J / Command+K
+keymap.set("n", "<D-Down>", ":m .+1<CR>==", opts)
+keymap.set("n", "<D-Up>", ":m .-2<CR>==", opts)
+keymap.set("v", "<D-Down>", ":m '>+1<CR>gv=gv", opts)
+keymap.set("v", "<D-Up>", ":m '<-2<CR>gv=gv", opts)
+
 -- Diagnostics
 keymap.set("n", "<C-j>", function()
-  vim.diagnostic.goto_next()
+	vim.diagnostic.goto_next()
 end, opts)
 
 -- Rename all similarities
 keymap.set("n", "<leader>rn", function()
-  local current_word = vim.fn.expand("<cword>")
-  local new_word = vim.fn.input("Rename all '" .. current_word .. "' to: ")
-  vim.cmd("%s/\\<" .. current_word .. "\\>/" .. new_word .. "/g")
+	local current_word = vim.fn.expand("<cword>")
+	local new_word = vim.fn.input("Rename all '" .. current_word .. "' to: ")
+	vim.cmd("%s/\\<" .. current_word .. "\\>/" .. new_word .. "/g")
 end, opts)
+
+keymap.set("n", "x", '"_x')
