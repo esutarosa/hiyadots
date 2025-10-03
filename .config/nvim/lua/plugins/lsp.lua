@@ -10,11 +10,12 @@ return {
 				"shfmt",
 				"tailwindcss-language-server",
 				"typescript-language-server",
+				"astro-language-server",
 				"css-lsp",
+				"vue-language-server",
 			})
 		end,
 	},
-
 	{
 		"neovim/nvim-lspconfig",
 		opts = {
@@ -24,10 +25,19 @@ return {
 				dockerls = {},
 				rust_analyzer = {},
 				cssls = {},
+				astro = {},
+				volar = {
+					filetypes = { "vue" },
+				},
 				tailwindcss = {
 					root_dir = function(...)
 						return require("lspconfig.util").root_pattern(".git")(...)
 					end,
+					settings = {
+						tailwindCSS = {
+							includeLanguages = { astro = "html", vue = "html" },
+						},
+					},
 				},
 				tsserver = {
 					root_dir = function(...)
@@ -128,14 +138,18 @@ return {
 				vimls = {},
 			},
 			setup = {
-				-- (!): use rustaceanvim.mason instead of rust_analyzer installed by mason to avoid toolchain mismatch
 				rust_analyzer = function()
 					return true
+				end,
+
+				vtsls = function(_, opts)
+					opts.on_attach = function(client)
+						client.server_capabilities.documentHighlightProvider = false
+					end
 				end,
 			},
 		},
 	},
-
 	{
 		"neovim/nvim-lspconfig",
 		opts = function()
@@ -144,7 +158,6 @@ return {
 				{
 					"gd",
 					function()
-						-- DO NOT RESUSE WINDOW
 						require("telescope.builtin").lsp_definitions({ reuse_win = false })
 					end,
 					desc = "Goto Definition",
@@ -153,8 +166,6 @@ return {
 			})
 		end,
 	},
-
-	-- TO-DO: do smthing with that in the feature
 	{
 		"mrcjkb/rustaceanvim",
 		ft = { "rust" },
@@ -173,7 +184,6 @@ return {
 			})
 		end,
 	},
-
 	{
 		"rust-lang/rust.vim",
 		ft = { "rust" },
