@@ -15,14 +15,17 @@ return {
 				model = "gpt-5",
 				api_key_name = "OPENAI_API_KEY",
 				timeout = 120000,
-				temperature = 0.7,
+				extra_request_body = {
+					temperature = 0.7,
+					max_completion_tokens = 8192,
+				},
 			},
 		},
 		windows = {
 			sidebar = {
 				enabled = true,
 				position = "right",
-				width = 42,
+				width = 64,
 				border = "rounded",
 			},
 		},
