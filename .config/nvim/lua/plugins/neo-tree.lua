@@ -21,8 +21,7 @@ return {
 						use_float = false,
 					},
 				},
-				["v"] = "add_to_clipboard",
-				["V"] = "clear_clipboard",
+				["v"] = "copy_to_clipboard",
 				["x"] = "cut_to_clipboard",
 				["y"] = "copy_to_clipboard",
 				["p"] = "paste_from_clipboard",
@@ -73,6 +72,12 @@ return {
 					if vim.bo.filetype == "neo-tree" then
 						vim.cmd([[setlocal fillchars=eob:\ ]])
 					end
+				end,
+			},
+			{
+				event = "file_opened",
+				handler = function(_)
+					require("neo-tree.command").execute({ action = "close" })
 				end,
 			},
 		},

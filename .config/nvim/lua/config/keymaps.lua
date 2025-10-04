@@ -76,6 +76,19 @@ nmap("<D-Up>", ":m .-2<CR>==", "Move line up")
 vmap("<D-Down>", ":m '>+1<CR>gv=gv", "Move selection down")
 vmap("<D-Up>", ":m '<-2<CR>gv=gv", "Move selection up")
 
+-- Avante
+nmap("<leader>aa", ":AvanteToggle<CR>", "Avante: toggle sidebar")
+nmap("<leader>ac", ":AvanteChat<CR>", "Avante: open chat")
+nmap("<leader>an", ":AvanteChatNew<CR>", "Avante: open new chat")
+nmap("<leader>aA", ":AvanteAsk<CR>", "Avante: ask about buffer")
+vmap("<leader>aa", ":'<,'>AvanteAsk<CR>", "Avante: ask about selection")
+nmap("<leader>af", ":AvanteFocus<CR>", "Avante: focus sidebar input")
+nmap("<leader>as", ":AvanteSelectFiles<CR>", "Avante: select context files")
+
+-- Avante Build
+nmap("<leader>aB", ":AvanteBuild<CR>", "Avante: build templates")
+nmap("<leader>aC", ":AvanteClear<CR>", "Avante: clear cache")
+
 -- Diagnostics jump helper
 local function diag_jump(dir, severity)
 	vim.diagnostic.jump({
