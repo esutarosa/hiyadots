@@ -2,11 +2,23 @@ return {
 	{
 		"nvim-treesitter/playground",
 		cmd = "TSPlaygroundToggle",
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
-		opts = {
-			ensure_installed = {
+		version = false,
+		build = ":TSUpdate",
+		opts = function(_, opts)
+			local base = {
+				"lua",
+				"vim",
+				"vimdoc",
+				"regex",
+				"markdown",
+				"markdown_inline",
+			}
+
+			local extra = {
 				"typescript",
 				"javascript",
 				"astro",
@@ -29,15 +41,21 @@ return {
 				"hyprlang",
 				"vue",
 				"tmux",
-			},
-			query_linter = {
+			}
+
+			opts.ensure_installed = vim.tbl_extend("force", opts.ensure_installed or {}, base, extra)
+
+			opts.highlight = vim.tbl_deep_extend("force", { enable = true }, opts.highlight or {})
+			opts.indent = vim.tbl_deep_extend("force", { enable = true }, opts.indent or {})
+
+			opts.query_linter = {
 				enable = true,
 				use_virtual_text = true,
 				lint_events = { "BufWrite", "CursorHold" },
-			},
-			playground = {
+			}
+
+			opts.playground = vim.tbl_deep_extend("force", {
 				enable = true,
-				disable = {},
 				updatetime = 25,
 				persist_queries = true,
 				keybindings = {
@@ -52,18 +70,12 @@ return {
 					goto_node = "<cr>",
 					show_help = "?",
 				},
-			},
-		},
-		config = function(_, opts)
-			require("nvim-treesitter.configs").setup(opts)
+			}, opts.playground or {})
 
-			-- MDX
-			vim.filetype.add({
-				extension = {
-					mdx = "mdx",
-				},
-			})
+			vim.filetype.add({ extension = { mdx = "mdx" } })
 			vim.treesitter.language.register("markdown", "mdx")
+
+			return opts
 		end,
 	},
 }
