@@ -16,7 +16,7 @@ return {
 				api_key_name = "OPENAI_API_KEY",
 				timeout = 120000,
 				extra_request_body = {
-					temperature = 0.7,
+					temperature = 1,
 					max_completion_tokens = 8192,
 				},
 			},
