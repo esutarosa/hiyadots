@@ -1,16 +1,19 @@
 return {
 	"neovim/nvim-lspconfig",
-	opts = function()
-		local keys = require("lazyvim.plugins.lsp.keymaps").get()
-		vim.list_extend(keys, {
-			{
-				"gd",
-				function()
-					require("telescope.builtin").lsp_definitions({ reuse_win = false })
-				end,
-				desc = "Goto Definition",
-				has = "definition",
-			},
+	opts = function(_, opts)
+		opts = opts or {}
+		opts.servers = opts.servers or {}
+
+		opts.servers["*"] = opts.servers["*"] or {}
+		opts.servers["*"].keys = opts.servers["*"].keys or {}
+
+		table.insert(opts.servers["*"].keys, {
+			"gd",
+			function()
+				require("telescope.builtin").lsp_definitions({ reuse_win = false })
+			end,
+			desc = "Goto Definition",
+			has = "definition",
 		})
 	end,
 }

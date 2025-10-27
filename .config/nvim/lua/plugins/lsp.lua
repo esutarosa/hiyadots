@@ -12,12 +12,13 @@ return {
 				filetypes = { "vue" },
 			},
 			tailwindcss = {
-				root_dir = function(...)
-					return require("lspconfig.util").root_pattern(".git")(...)
-				end,
 				settings = {
 					tailwindCSS = {
-						includeLanguages = { astro = "html", vue = "html" },
+						includeLanguages = {
+							elixir = "html-eex",
+							eelixir = "html-eex",
+							heex = "html-eex",
+						},
 					},
 				},
 			},
