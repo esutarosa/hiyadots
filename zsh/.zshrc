@@ -23,6 +23,7 @@ alias lt='eza --icons=auto --tree'
 # alias pc='brew cleanup'
 # alias po='brew outdated'
 
+alias cd='z'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias .3='cd ../../..'
@@ -45,5 +46,6 @@ setopt hist_verify
 bindkey "^[[A" history-search-backward
 bindkey "^[[B" history-search-forward
 
-source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# MacOS
+# source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+# source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
