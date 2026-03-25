@@ -58,27 +58,12 @@ nmap("<C-h>", actions.resize_left, "Resize ←")
 nmap("<C-l>", actions.resize_right, "Resize →")
 nmap("<C-k>", actions.resize_up, "Resize ↑")
 nmap("<C-j>", actions.resize_down, "Resize ↓")
-nmap("<C-Left>", actions.resize_left, "Resize ←")
-nmap("<C-Right>", actions.resize_right, "Resize →")
-nmap("<C-Up>", actions.resize_up, "Resize ↑")
-nmap("<C-Down>", actions.resize_down, "Resize ↓")
-nmap("<C-S-h>", actions.resize_left, "Resize ←")
-nmap("<C-S-l>", actions.resize_right, "Resize →")
-nmap("<C-S-k>", actions.resize_up, "Resize ↑")
-nmap("<C-S-j>", actions.resize_down, "Resize ↓")
-nmap("<leader>wh", actions.resize_left, "Resize left")
-nmap("<leader>wl", actions.resize_right, "Resize right")
-nmap("<leader>wk", actions.resize_up, "Resize up")
-nmap("<leader>wj", actions.resize_down, "Resize down")
 
 -- Move lines up/down with Command+J / Command+K and Alt+J / Alt+K
 nmap("<D-j>", ":m .+1<CR>==", "Move line down")
 nmap("<D-k>", ":m .-2<CR>==", "Move line up")
 vmap("<D-j>", ":m '>+1<CR>gv=gv", "Move selection down")
 vmap("<D-k>", ":m '<-2<CR>gv=gv", "Move selection up")
-
--- Diagnostics
-nmap("]d", actions.diagnostic_next, "Next diagnostic")
 
 -- Replace
 nmap("<leader>rn", actions.rename_word_in_buffer, "Replace word in buffer")
