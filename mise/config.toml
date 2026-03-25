@@ -1,0 +1,6 @@
+[tools]
+node = "latest"
+bun = "latest"
+go = "latest"
+rust = "latest"
+terraform = "latest"
