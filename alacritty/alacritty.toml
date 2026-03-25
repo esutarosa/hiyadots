@@ -1,6 +1,6 @@
 [general]
 import = [
-  "~/.config/alacritty/themes/alacritty-theme/themes/vesper.toml",
+  "~/.config/alacritty/themes/paramount.toml",
 ]
 
 [env]
