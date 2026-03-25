@@ -21,3 +21,9 @@ title = "ヒヤシンス"
 [font]
 normal.family = "MesloLGS Nerd Font Mono"
 size = 16
+
+[keyboard]
+bindings = [
+  { key = "J", mods = "Command", chars = "\u001bj" },
+  { key = "K", mods = "Command", chars = "\u001bk" },
+]
