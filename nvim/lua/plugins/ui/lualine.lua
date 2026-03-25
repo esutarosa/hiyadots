@@ -44,32 +44,7 @@ return {
 		vim.api.nvim_set_hl(0, "StatusLine", { bg = "NONE" })
 		vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "NONE" })
 		opts.sections.lualine_a = {}
-		opts.sections.lualine_b = {
-			"branch",
-			{
-				"diff",
-				symbols = {
-					added = "+",
-					modified = "~",
-					removed = "-",
-				},
-				diff_color = {
-					added = { fg = "#7FAF5F" },
-					modified = { fg = "#D0A85C" },
-					removed = { fg = "#C15F5F" },
-				},
-				source = function()
-					local gitsigns = vim.b.gitsigns_status_dict
-					if gitsigns then
-						return {
-							added = gitsigns.added,
-							modified = gitsigns.changed,
-							removed = gitsigns.removed,
-						}
-					end
-				end,
-			},
-		}
+		opts.sections.lualine_b = { "branch" }
 		local root_dir = LazyVim.lualine.root_dir()
 		root_dir.cond = function()
 			return not_neo_tree()
