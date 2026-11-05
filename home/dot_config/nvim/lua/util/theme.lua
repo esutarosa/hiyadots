@@ -47,7 +47,10 @@ M.themes = {
 				background = "default",
 				overrides = {
 					default = palette,
-					hlgroups = { Directory = { guifg = palette.func } },
+					hlgroups = {
+						Directory = { guifg = palette.func },
+						SnacksDashboardHeader = { guifg = palette.keyword },
+					},
 				},
 				diagnostics = {
 					background = false,
@@ -141,6 +144,11 @@ function M.pick()
 end
 
 function M.setup()
+	vim.api.nvim_create_autocmd("ColorScheme", {
+		group = vim.api.nvim_create_augroup("TransparentBg", { clear = true }),
+		callback = apply_transparency,
+	})
+
 	vim.api.nvim_create_user_command("Theme", function(opts)
 		if opts.args == "" then
 			M.pick()
