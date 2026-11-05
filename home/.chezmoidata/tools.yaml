@@ -31,7 +31,7 @@ tools:
   tmux:
     group: terminal
     paths: [.config/tmux]
-    pkg: [tmux]
+    pkg: [tmux, fzf]
 
   neovim:
     group: editor
