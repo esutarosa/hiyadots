@@ -36,10 +36,10 @@ tools:
   neovim:
     group: editor
     paths: [.config/nvim]
-    pkg: [neovim]
-    brew: [luarocks]
-    pacman: [luarocks]
-    nix: [luarocks]
+    pkg: [neovim, fd]
+    brew: [luarocks, tree-sitter-cli]
+    pacman: [luarocks, tree-sitter-cli]
+    nix: [luarocks, tree-sitter]
 
   yabai:
     group: desktop
