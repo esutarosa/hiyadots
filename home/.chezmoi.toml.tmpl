@@ -1,0 +1,39 @@
+{{- $tools := (include ".chezmoidata/tools.yaml" | fromYaml).tools -}}
+{{- $keys := list "pkg" "pacman" "aur" "nix" -}}
+{{- if eq .chezmoi.os "darwin" -}}{{- $keys = list "pkg" "brew" "cask" -}}{{- end -}}
+{{- $picks := dict -}}
+{{- range $group := list "shell" "terminal" "editor" "desktop" "cli" "dev" "apps" -}}
+{{-   $choices := list -}}
+{{-   $defaults := list -}}
+{{-   range $name, $tool := $tools -}}
+{{-     if eq $tool.group $group -}}
+{{-       $offered := false -}}
+{{-       range $keys -}}{{- if hasKey $tool . -}}{{- $offered = true -}}{{- end -}}{{- end -}}
+{{-       if $offered -}}
+{{-         $choices = append $choices $name -}}
+{{-         if and (hasKey $ "picks") (hasKey $.picks $group) -}}
+{{-           if has $name (index $.picks $group) -}}{{- $defaults = append $defaults $name -}}{{- end -}}
+{{-         end -}}
+{{-       end -}}
+{{-     end -}}
+{{-   end -}}
+{{-   if $choices -}}
+{{-     $_ := set $picks $group (promptMultichoiceOnce $ (printf "picks.%s" $group) $group $choices $defaults) -}}
+{{-   end -}}
+{{- end -}}
+{{- $total := 0 -}}
+{{- range $picks -}}{{- $total = add $total (len .) -}}{{- end -}}
+{{- if not $total -}}{{- fail "Select at least one tool, then run chezmoi init again." -}}{{- end -}}
+{{- $gitName := promptStringOnce $ "git.name" "git user.name" "" -}}
+{{- $gitEmail := promptStringOnce $ "git.email" "git user.email" "" -}}
+sourceDir = {{ .chezmoi.workingTree | quote }}
+mode = "symlink"
+
+[data.git]
+name = {{ $gitName | quote }}
+email = {{ $gitEmail | quote }}
+
+[data.picks]
+{{ range $group, $names := $picks -}}
+{{ $group }} = {{ $names | toToml }}
+{{ end -}}

@@ -1,0 +1,6 @@
+AGENTS.md
+CLAUDE.md
+.codex/
+.codex/*
+
+**/.claude/.cc-writes/

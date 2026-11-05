@@ -1,0 +1,60 @@
+#!/bin/sh
+{{- $selected := list -}}
+{{- range .picks -}}{{- $selected = concat $selected . -}}{{- end -}}
+{{- $lists := dict -}}
+{{- range $key := list "pkg" "brew" "cask" "pacman" "aur" "nix" -}}
+{{-   $names := list -}}
+{{-   range $name := $selected -}}
+{{-     $tool := index $.tools $name -}}
+{{-     if and $tool (hasKey $tool $key) -}}{{- $names = concat $names (index $tool $key) -}}{{- end -}}
+{{-   end -}}
+{{-   $_ := set $lists $key ($names | uniq | join " ") -}}
+{{- end }}
+pkg="{{ $lists.pkg }}"
+brew="{{ $lists.brew }}"
+cask="{{ $lists.cask }}"
+pacman="{{ $lists.pacman }}"
+aur="{{ $lists.aur }}"
+nix="{{ $lists.nix }}"
+
+failed=""
+install() { # install <package> <command...>
+  package=$1; shift
+  "$@" "$package" || failed="$failed $package"
+}
+
+if [ "$(uname)" = Darwin ]; then
+  if ! command -v brew >/dev/null && [ ! -x /opt/homebrew/bin/brew ]; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  fi
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  for p in $pkg $brew; do
+    brew list --formula "${p##*/}" >/dev/null 2>&1 || install "$p" brew install --formula
+  done
+  for p in $cask; do
+    brew list --cask "$p" >/dev/null 2>&1 || install "$p" brew install --cask
+  done
+elif command -v pacman >/dev/null; then
+  for p in $pkg $pacman; do install "$p" sudo pacman -S --needed --noconfirm; done
+  if [ -n "$aur" ] && ! command -v paru >/dev/null; then
+    sudo pacman -S --needed --noconfirm base-devel git
+    build=$(mktemp -d)
+    git clone https://aur.archlinux.org/paru-bin.git "$build" && (cd "$build" && makepkg -si --noconfirm)
+    rm -rf "$build"
+  fi
+  if command -v paru >/dev/null; then
+    for p in $aur; do install "$p" paru -S --needed --noconfirm; done
+  elif [ -n "$aur" ]; then
+    failed="$failed $aur"
+  fi
+elif command -v nix >/dev/null; then
+  for p in $pkg $nix; do
+    install "nixpkgs#$p" nix --extra-experimental-features "nix-command flakes" profile install
+  done
+else
+  echo "No supported package manager found (brew, pacman, nix). Skipping packages." >&2
+fi
+
+if [ -n "$failed" ]; then
+  echo "Not installed:$failed" >&2
+fi

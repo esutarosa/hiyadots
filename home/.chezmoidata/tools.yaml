@@ -1,0 +1,135 @@
+# group: prompt section. paths: files under $HOME owned by the tool.
+# pkg: same name in brew, pacman and nix. Otherwise use brew, cask, pacman, aur, nix.
+# keep_package: unselecting removes the config links, never the package.
+# Third-party brew formulae use full names, so Homebrew trusts that formula and not the whole tap.
+tools:
+  zsh:
+    group: shell
+    paths: [.zshrc, .zshenv, .zprofile, .p10k.zsh]
+    brew: [powerlevel10k, zsh-autosuggestions, zsh-syntax-highlighting]
+    pacman: [zsh, zsh-autosuggestions, zsh-syntax-highlighting]
+    aur: [zsh-theme-powerlevel10k]
+    nix: [zsh, zsh-powerlevel10k, zsh-autosuggestions, zsh-syntax-highlighting]
+  nushell:
+    group: shell
+    paths: [.config/nushell, Library/Application Support/nushell]
+    pkg: [nushell]
+
+  ghostty:
+    group: terminal
+    paths: [.config/ghostty]
+    cask: [ghostty, font-plemol-jp-nf]
+    pacman: [ghostty]
+    nix: [ghostty]
+  alacritty: # legacy: Homebrew disabled the cask on 2026-09-01, a new Mac needs the GitHub build
+    group: terminal
+    keep_package: true
+    paths: [.config/alacritty]
+    cask: [alacritty]
+    pacman: [alacritty]
+    nix: [alacritty]
+  tmux:
+    group: terminal
+    paths: [.config/tmux]
+    pkg: [tmux]
+
+  neovim:
+    group: editor
+    paths: [.config/nvim]
+    pkg: [neovim]
+    brew: [luarocks]
+    pacman: [luarocks]
+    nix: [luarocks]
+
+  yabai:
+    group: desktop
+    paths: [.config/yabai]
+    brew: [asmvik/formulae/yabai]
+  skhd:
+    group: desktop
+    paths: [.config/skhd]
+    brew: [asmvik/formulae/skhd]
+  kanata:
+    group: desktop
+    brew: [kanata]
+    aur: [kanata-bin]
+    nix: [kanata]
+  meslo-font:
+    group: desktop
+    cask: [font-meslo-lg-nerd-font]
+    pacman: [ttf-meslo-nerd]
+    nix: [nerd-fonts.meslo-lg]
+
+  git:
+    group: cli
+    paths: [.gitconfig, .config/git]
+    pkg: [git]
+  gh:
+    group: cli
+    brew: [gh]
+    pacman: [github-cli]
+    nix: [gh]
+  topgrade:
+    group: cli
+    brew: [topgrade]
+    aur: [topgrade-bin]
+    nix: [topgrade]
+  eza: {group: cli, pkg: [eza]}
+  zoxide: {group: cli, pkg: [zoxide]}
+  fzf: {group: cli, paths: [.config/fzf], pkg: [fzf]}
+  ripgrep: {group: cli, pkg: [ripgrep]}
+  jq: {group: cli, pkg: [jq]}
+  just: {group: cli, pkg: [just]}
+  lazygit: {group: cli, pkg: [lazygit]}
+  fastfetch: {group: cli, pkg: [fastfetch]}
+  cloc: {group: cli, pkg: [cloc]}
+  imagemagick: {group: cli, pkg: [imagemagick]}
+  mkcert: {group: cli, pkg: [mkcert]}
+  lftp: {group: cli, pkg: [lftp]}
+  lazysql:
+    group: cli
+    brew: [lazysql]
+    aur: [lazysql]
+    nix: [lazysql]
+
+  mise:
+    group: dev
+    paths: [.config/mise]
+    pkg: [mise]
+  go: {group: dev, pkg: [go]}
+  nvm:
+    group: dev
+    brew: [nvm]
+    pacman: [nvm]
+  node:
+    group: dev
+    brew: [node]
+    pacman: [nodejs]
+    nix: [nodejs]
+  python:
+    group: dev
+    brew: [python@3.13]
+    pacman: [python]
+    nix: [python3]
+  llvm: {group: dev, pkg: [llvm]}
+  rust-analyzer: {group: dev, pkg: [rust-analyzer]}
+  flutter:
+    group: dev
+    cask: [flutter]
+    aur: [flutter]
+    nix: [flutter]
+
+  docker:
+    group: apps
+    cask: [docker-desktop]
+    pacman: [docker]
+    nix: [docker]
+  chromium:
+    group: apps
+    cask: [chromium]
+    pacman: [chromium]
+    nix: [chromium]
+  codex:
+    group: apps
+    cask: [codex]
+    aur: [openai-codex-bin]

@@ -1,0 +1,9 @@
+{{- if or .git.name .git.email -}}
+[user]
+{{- if .git.name }}
+	name = {{ .git.name }}
+{{- end }}
+{{- if .git.email }}
+	email = {{ .git.email }}
+{{- end }}
+{{ end -}}

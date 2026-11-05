@@ -1,0 +1,27 @@
+[general]
+import = ["~/.config/alacritty/themes/hiyashinsu-moondust.toml"]
+
+[env]
+TERM = "xterm-256color"
+
+[window]
+padding.x = 8
+padding.y = 8
+
+decorations = "Buttonless"
+
+opacity = 0.8
+blur = true
+
+option_as_alt = "Both"
+title = "ヒヤシンス"
+
+[font]
+normal.family = "MesloLGS Nerd Font Mono"
+size = 16
+
+[keyboard]
+bindings = [
+  { key = "J", mods = "Command", chars = "\u001bj" },
+  { key = "K", mods = "Command", chars = "\u001bk" },
+]

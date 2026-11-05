@@ -1,0 +1,117 @@
+#!/bin/sh
+# Only tools selected on the previous run and unselected now are removed. DOTS_REMOVE=yes skips the question.
+{{- $selected := list -}}
+{{- range .picks -}}{{- $selected = concat $selected . -}}{{- end -}}
+{{- $stateFile := joinPath .chezmoi.homeDir ".local/state/dots/selected" -}}
+{{- $previous := list -}}
+{{- if stat $stateFile -}}{{- $previous = splitList "\n" (output "cat" $stateFile | trim) -}}{{- end -}}
+{{- $keep := dict -}}
+{{- $drop := dict -}}
+{{- $paths := list -}}
+{{- range $key := list "pkg" "brew" "cask" "pacman" "aur" "nix" -}}
+{{-   $kept := list -}}
+{{-   $dropped := list -}}
+{{-   range $name, $tool := $.tools -}}
+{{-     if hasKey $tool $key -}}
+{{-       if has $name $selected -}}{{- $kept = concat $kept (index $tool $key) -}}
+{{-       else if and (has $name $previous) (not (hasKey $tool "keep_package")) -}}{{- $dropped = concat $dropped (index $tool $key) -}}
+{{-       end -}}
+{{-     end -}}
+{{-   end -}}
+{{-   $_ := set $keep $key $kept -}}
+{{-   $_ := set $drop $key $dropped -}}
+{{- end -}}
+{{- range $name, $tool := .tools -}}
+{{-   if and (has $name $previous) (not (has $name $selected)) (hasKey $tool "paths") -}}{{- $paths = concat $paths $tool.paths -}}{{- end -}}
+{{- end -}}
+{{- $lists := dict -}}
+{{- range $key, $names := $drop -}}
+{{-   $out := list -}}
+{{-   range $names -}}
+{{-     if not (or (has . (index $keep $key)) (has . (index $keep "pkg"))) -}}{{- $out = append $out . -}}{{- end -}}
+{{-   end -}}
+{{-   $_ := set $lists $key ($out | uniq | join " ") -}}
+{{- end }}
+pkg="{{ $lists.pkg }}"
+brew="{{ $lists.brew }}"
+cask="{{ $lists.cask }}"
+pacman="{{ $lists.pacman }}"
+aur="{{ $lists.aur }}"
+nix="{{ $lists.nix }}"
+source_dir={{ .chezmoi.sourceDir | quote }}
+state_file={{ $stateFile | quote }}
+
+save_selection() {
+  mkdir -p "$(dirname "$state_file")"
+  cat > "$state_file" <<'SELECTED'
+{{ $selected | join "\n" }}
+SELECTED
+}
+
+tool_paths() {
+  while IFS= read -r path; do
+    [ -n "$path" ] && printf '%s\n' "$HOME/$path"
+  done <<'PATHS'
+{{ $paths | join "\n" }}
+PATHS
+}
+
+links=$(tool_paths | while IFS= read -r target; do
+  [ -e "$target" ] || [ -L "$target" ] || continue
+  find "$target" -type l \( -lname "$source_dir/*" -o -lname "$HOME/.config/*" \)
+done)
+
+formulae="" casks="" arch="" nixes=""
+if [ "$(uname)" = Darwin ]; then
+  command -v brew >/dev/null || { [ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"; }
+  if command -v brew >/dev/null; then
+    for p in $pkg $brew; do brew list --formula "${p##*/}" >/dev/null 2>&1 && formulae="$formulae $p"; done
+    for p in $cask; do brew list --cask "$p" >/dev/null 2>&1 && casks="$casks $p"; done
+  fi
+elif command -v pacman >/dev/null; then
+  for p in $pkg $pacman $aur; do pacman -Qq "$p" >/dev/null 2>&1 && arch="$arch $p"; done
+elif command -v nix >/dev/null; then
+  for p in $pkg $nix; do nix profile list 2>/dev/null | grep -qw "$p" && nixes="$nixes $p"; done
+fi
+
+if [ -z "$links$formulae$casks$arch$nixes" ]; then
+  save_selection
+  exit 0
+fi
+
+echo "Not selected anymore, can be removed:"
+[ -z "$links" ] || printf '%s\n' "$links" | sed 's/^/  link: /'
+for p in $formulae $casks $arch $nixes; do echo "  package: $p"; done
+if [ "${SHELL##*/}" = zsh ] && printf '%s\n' "$links" | grep -q '/\.zshrc$'; then
+  echo "  warning: your login shell is still zsh, it would start without ~/.zshrc"
+fi
+
+if [ "$DOTS_REMOVE" != yes ]; then
+  if ! (: </dev/tty) 2>/dev/null; then
+    echo "No terminal, nothing removed. It will ask again on the next chezmoi apply." >&2
+    exit 0
+  fi
+  printf 'Remove all of this? [y/N] ' >/dev/tty
+  read -r answer </dev/tty
+  case "$answer" in
+    y|Y) ;;
+    *) echo "Nothing removed."; save_selection; exit 0 ;;
+  esac
+fi
+
+failed=""
+[ -z "$links" ] || printf '%s\n' "$links" | while IFS= read -r link; do rm -f "$link"; done
+tool_paths | while IFS= read -r target; do
+  [ -d "$target" ] && [ ! -L "$target" ] && find "$target" -depth -type d -empty -delete
+done
+
+for p in $formulae; do brew uninstall --formula "$p" || failed="$failed $p"; done
+for p in $casks; do brew uninstall --cask "$p" || failed="$failed $p"; done
+for p in $arch; do sudo pacman -Rns --noconfirm "$p" || failed="$failed $p"; done
+for p in $nixes; do nix --extra-experimental-features "nix-command flakes" profile remove "$p" || failed="$failed $p"; done
+
+save_selection
+
+if [ -n "$failed" ]; then
+  echo "Not removed:$failed" >&2
+fi

@@ -1,0 +1,5 @@
+return {
+{{- range $key, $value := .theme.colors }}
+	{{ $key }} = "{{ $value }}",
+{{- end }}
+}

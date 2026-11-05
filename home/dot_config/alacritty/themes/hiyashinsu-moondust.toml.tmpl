@@ -1,0 +1,31 @@
+[colors.primary]
+background = '{{ .theme.colors.bg }}'
+foreground = '{{ .theme.colors.fg }}'
+
+[colors.cursor]
+cursor = '{{ .theme.colors.fg }}'
+text = '{{ .theme.colors.bg }}'
+
+[colors.selection]
+background = '{{ .theme.colors.visual }}'
+text = '{{ .theme.colors.type }}'
+
+[colors.normal]
+black = '{{ .theme.ansi.black }}'
+red = '{{ .theme.ansi.red }}'
+green = '{{ .theme.ansi.green }}'
+yellow = '{{ .theme.ansi.yellow }}'
+blue = '{{ .theme.ansi.blue }}'
+magenta = '{{ .theme.ansi.magenta }}'
+cyan = '{{ .theme.ansi.cyan }}'
+white = '{{ .theme.ansi.white }}'
+
+[colors.bright]
+black = '{{ .theme.bright.black }}'
+red = '{{ .theme.bright.red }}'
+green = '{{ .theme.bright.green }}'
+yellow = '{{ .theme.bright.yellow }}'
+blue = '{{ .theme.bright.blue }}'
+magenta = '{{ .theme.bright.magenta }}'
+cyan = '{{ .theme.bright.cyan }}'
+white = '{{ .theme.bright.white }}'

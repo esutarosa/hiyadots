@@ -1,0 +1,14 @@
+{{- $selected := list -}}
+{{- range .picks -}}{{- $selected = concat $selected . -}}{{- end -}}
+{{- range $name, $tool := .tools -}}
+{{-   if and (not (has $name $selected)) (hasKey $tool "paths") -}}
+{{-     range $tool.paths }}
+{{ . }}
+{{ . }}/**
+{{-     end -}}
+{{-   end -}}
+{{- end }}
+{{ if ne .chezmoi.os "darwin" -}}
+Library
+Library/**
+{{- end }}
