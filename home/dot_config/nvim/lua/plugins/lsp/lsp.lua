@@ -8,43 +8,6 @@ return {
 		opts.servers.just = opts.servers.just or {}
 		opts.servers.vimls = opts.servers.vimls or {}
 
-		opts.servers.tailwindcss = vim.tbl_deep_extend("force", opts.servers.tailwindcss or {}, {
-			settings = {
-				tailwindCSS = {
-					includeLanguages = {
-						elixir = "html-eex",
-						eelixir = "html-eex",
-						heex = "html-eex",
-					},
-				},
-			},
-		})
-
-		opts.servers.vtsls = vim.tbl_deep_extend("force", opts.servers.vtsls or {}, {
-			settings = {
-				typescript = {
-					inlayHints = {
-						parameterNames = { enabled = "literals" },
-						parameterTypes = { enabled = true },
-						variableTypes = { enabled = false },
-						propertyDeclarationTypes = { enabled = true },
-						functionLikeReturnTypes = { enabled = true },
-						enumMemberValues = { enabled = true },
-					},
-				},
-				javascript = {
-					inlayHints = {
-						parameterNames = { enabled = "all" },
-						parameterTypes = { enabled = true },
-						variableTypes = { enabled = true },
-						propertyDeclarationTypes = { enabled = true },
-						functionLikeReturnTypes = { enabled = true },
-						enumMemberValues = { enabled = true },
-					},
-				},
-			},
-		})
-
 		opts.servers.lua_ls = vim.tbl_deep_extend("force", opts.servers.lua_ls or {}, {
 			single_file_support = true,
 			settings = {

@@ -5,23 +5,8 @@ vim.filetype.add({
 		[".env"] = "dotenv",
 	},
 	pattern = {
-		["%.env%.[%w_.-]+$"] = "dotenv",
+		[".*/%.env%.[%w_.-]+"] = "dotenv",
 	},
-})
-
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-	group = group,
-	pattern = { ".env", ".env.*" },
-	callback = function(args)
-		vim.bo[args.buf].filetype = "dotenv"
-	end,
-})
-
-vim.api.nvim_create_autocmd("InsertLeave", {
-	group = group,
-	callback = function()
-		vim.opt.paste = false
-	end,
 })
 
 vim.api.nvim_create_autocmd("FileType", {
