@@ -1,5 +1,8 @@
 [general]
-import = ["~/.config/alacritty/themes/hiyashinsu-moondust.toml"]
+import = [
+  "~/.config/alacritty/themes/hiyashinsu-moondust.toml",
+  "~/.config/alacritty/shell.toml",
+]
 
 [env]
 TERM = "xterm-256color"

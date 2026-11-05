@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+
+case "${1:-}" in
+  nu | zsh) path=$(command -v "$1") || { echo "$1 is not installed" >&2; exit 1; } ;;
+  *) echo "usage: use-shell nu|zsh" >&2; exit 2 ;;
+esac
+
+config="$HOME/.config"
+mkdir -p "$config/alacritty" "$config/ghostty" "$config/tmux"
+
+printf '[terminal]\nshell = { program = "%s", args = ["-l"] }\n' "$path" > "$config/alacritty/shell.toml"
+printf 'command = %s\n' "$path" > "$config/ghostty/shell.conf"
+if [ "$1" = zsh ]; then
+  : > "$config/tmux/shell.conf"
+else
+  printf 'set -g default-command "%s"\n' "$path" > "$config/tmux/shell.conf"
+fi
+
+echo "New Alacritty windows use $1. In tmux press prefix r, then open a new pane."

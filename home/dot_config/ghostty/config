@@ -52,3 +52,5 @@ keybind = ctrl+t>x=close_surface
 
 keybind = cmd+j=text:\x1bj
 keybind = cmd+k=text:\x1bk
+
+config-file = ?shell.conf
