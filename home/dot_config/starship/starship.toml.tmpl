@@ -1,0 +1,42 @@
+add_newline = true
+format = "$os$directory$git_branch$git_status$line_break$character"
+right_format = "$cmd_duration$time"
+
+[os]
+disabled = false
+style = "fg:{{ .theme.colors.fg }}"
+
+[os.symbols]
+Macos = " "
+Arch = "󰣇 "
+NixOS = " "
+Linux = " "
+
+[directory]
+style = "fg:{{ .theme.colors.keyword }}"
+truncation_length = 3
+truncate_to_repo = false
+
+[git_branch]
+symbol = " "
+format = "[$symbol$branch]($style) "
+style = "fg:{{ .theme.colors.string }}"
+
+[git_status]
+format = "[$all_status$ahead_behind]($style)"
+style = "fg:{{ .theme.colors.constant }}"
+
+[character]
+success_symbol = "[❯](fg:{{ .theme.colors.string }})"
+error_symbol = "[❯](fg:{{ .theme.colors.number }})"
+vimcmd_symbol = "[❮](fg:{{ .theme.colors.string }})"
+
+[cmd_duration]
+format = "[$duration]($style) "
+style = "fg:{{ .theme.ansi.white }}"
+
+[time]
+disabled = false
+format = "[$time]($style)"
+time_format = "%H:%M:%S"
+style = "fg:{{ .theme.ansi.white }}"

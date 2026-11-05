@@ -36,11 +36,22 @@ path add "/usr/local/bin"
 path add ($env.HOME | path join ".docker/bin")
 path add "/Applications/Docker.app/Contents/Resources/bin"
 path add ($env.HOME | path join ".turso")
-path add ($env.HOME | path join ".local/share/mise/shims")
 path add ($env.HOME | path join ".local/bin")
 path add ($env.HOME | path join ".bun/bin")
 path add $env.GOBIN
 path add ($env.HOME | path join ".cargo/bin")
+
+let nvm_default = ($env.HOME | path join ".nvm/alias/default")
+if ($nvm_default | path exists) {
+    path add ($env.HOME | path join $".nvm/versions/node/v(open --raw $nvm_default | str trim)/bin")
+}
+
+let init_dir = ($env.HOME | path join ".cache/nushell-init")
+mkdir $init_dir
+for tool in [[name command]; [zoxide { zoxide init nushell }] [starship { starship init nu }]] {
+    let file = ($init_dir | path join $"($tool.name).nu")
+    if (which $tool.name | is-not-empty) { do $tool.command | save -f $file } else { "" | save -f $file }
+}
 
 def --env cx [arg] {
     cd $arg
@@ -55,15 +66,25 @@ alias c = clear
 alias n = nvim
 alias t = tmux
 
-alias l = ls --all
-alias ll = ls -l
-alias lt = eza --tree --level=2 --long --icons --git
+alias l = ^eza -lh --icons=auto
+alias ll = ^eza -lha --icons=auto --sort=name --group-directories-first
+alias ld = ^eza -lhD --icons=auto
+alias lt = ^eza --icons=auto --tree
+
+def nls [path: path = "."] { ls $path | table -e }
 
 alias .. = cd ..
 alias ... = cd ../..
 alias d3 = cd ../../..
 alias d4 = cd ../../../..
 alias d5 = cd ../../../../..
+
+alias un = brew uninstall
+def up [] { brew update; brew upgrade }
+alias pl = brew list
+alias pa = brew search
+alias pc = brew cleanup
+alias po = brew outdated
 
 alias mkdir = ^mkdir -p
 

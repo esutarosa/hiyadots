@@ -12,8 +12,8 @@ tools:
     nix: [zsh, zsh-powerlevel10k, zsh-autosuggestions, zsh-syntax-highlighting]
   nushell:
     group: shell
-    paths: [.config/nushell, Library/Application Support/nushell]
-    pkg: [nushell]
+    paths: [.config/nushell, .config/starship, Library/Application Support/nushell]
+    pkg: [nushell, starship]
 
   ghostty:
     group: terminal
