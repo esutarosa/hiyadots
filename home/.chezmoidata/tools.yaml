@@ -71,6 +71,7 @@ tools:
     nix: [gh]
   topgrade:
     group: cli
+    paths: [.config/topgrade.toml]
     brew: [topgrade]
     aur: [topgrade-bin]
     nix: [topgrade]

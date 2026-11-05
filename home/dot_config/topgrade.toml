@@ -1,0 +1,17 @@
+[misc]
+# system runs softwareupdate --install --all, which can install a new major macOS.
+disable = [
+  "system",
+  "containers",
+  "pip3",
+  "git_repos",
+  "chezmoi",
+  "skills",
+  "github_cli_skills",
+  "claude_code_plugins",
+]
+cleanup = true
+no_retry = true
+
+[post_commands]
+"Pinned yabai and skhd" = """sh -c 'command -v brew >/dev/null || exit 0; o=$(brew outdated --quiet yabai skhd 2>/dev/null); [ -z "$o" ] || echo "New version of pinned: $o. Stop the services, brew unpin, brew upgrade, brew pin, then grant Accessibility again."'"""
