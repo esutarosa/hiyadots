@@ -37,9 +37,9 @@ tools:
     group: editor
     paths: [.config/nvim]
     pkg: [neovim, fd]
-    brew: [luarocks, tree-sitter-cli]
-    pacman: [luarocks, tree-sitter-cli]
-    nix: [luarocks, tree-sitter]
+    brew: [luarocks, tree-sitter-cli, ripgrep, lazygit, node, go]
+    pacman: [luarocks, tree-sitter-cli, ripgrep, lazygit, nodejs, npm, go, python, base-devel, unzip]
+    nix: [luarocks, tree-sitter, ripgrep, lazygit, nodejs, go, python3, gcc, gnumake, unzip]
 
   yabai:
     group: desktop
