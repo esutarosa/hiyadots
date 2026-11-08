@@ -8,7 +8,7 @@
 {{- $keep := dict -}}
 {{- $drop := dict -}}
 {{- $paths := list -}}
-{{- range $key := list "pkg" "brew" "cask" "pacman" "aur" "nix" -}}
+{{- range $key := list "pkg" "brew" "cask" "pacman" "apt" "aur" "nix" -}}
 {{-   $kept := list -}}
 {{-   $dropped := list -}}
 {{-   range $name, $tool := $.tools -}}
@@ -36,6 +36,7 @@ pkg="{{ $lists.pkg }}"
 brew="{{ $lists.brew }}"
 cask="{{ $lists.cask }}"
 pacman="{{ $lists.pacman }}"
+apt="{{ $lists.apt }}"
 aur="{{ $lists.aur }}"
 nix="{{ $lists.nix }}"
 source_dir={{ .chezmoi.sourceDir | quote }}
@@ -61,7 +62,9 @@ links=$(tool_paths | while IFS= read -r target; do
   find "$target" -type l \( -lname "$source_dir/*" -o -lname "$HOME/.config/*" \)
 done)
 
-formulae="" casks="" arch="" nixes=""
+formulae="" casks="" arch="" debs="" nixes=""
+sudo=""
+[ "$(id -u)" -eq 0 ] || sudo=sudo
 if [ "$(uname)" = Darwin ]; then
   command -v brew >/dev/null || { [ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"; }
   if command -v brew >/dev/null; then
@@ -70,18 +73,20 @@ if [ "$(uname)" = Darwin ]; then
   fi
 elif command -v pacman >/dev/null; then
   for p in $pkg $pacman $aur; do pacman -Qq "$p" >/dev/null 2>&1 && arch="$arch $p"; done
+elif command -v apt-get >/dev/null; then
+  for p in $apt; do dpkg -s "$p" >/dev/null 2>&1 && debs="$debs $p"; done
 elif command -v nix >/dev/null; then
   for p in $pkg $nix; do nix profile list 2>/dev/null | grep -qw "$p" && nixes="$nixes $p"; done
 fi
 
-if [ -z "$links$formulae$casks$arch$nixes" ]; then
+if [ -z "$links$formulae$casks$arch$debs$nixes" ]; then
   save_selection
   exit 0
 fi
 
 echo "Not selected anymore, can be removed:"
 [ -z "$links" ] || printf '%s\n' "$links" | sed 's/^/  link: /'
-for p in $formulae $casks $arch $nixes; do echo "  package: $p"; done
+for p in $formulae $casks $arch $debs $nixes; do echo "  package: $p"; done
 if [ "${SHELL##*/}" = zsh ] && printf '%s\n' "$links" | grep -q '/\.zshrc$'; then
   echo "  warning: your login shell is still zsh, it would start without ~/.zshrc"
 fi
@@ -107,7 +112,8 @@ done
 
 for p in $formulae; do brew uninstall --formula "$p" || failed="$failed $p"; done
 for p in $casks; do brew uninstall --cask "$p" || failed="$failed $p"; done
-for p in $arch; do sudo pacman -Rns --noconfirm "$p" || failed="$failed $p"; done
+for p in $arch; do $sudo pacman -Rns --noconfirm "$p" || failed="$failed $p"; done
+for p in $debs; do $sudo apt-get remove -y "$p" || failed="$failed $p"; done
 for p in $nixes; do nix --extra-experimental-features "nix-command flakes" profile remove "$p" || failed="$failed $p"; done
 
 save_selection

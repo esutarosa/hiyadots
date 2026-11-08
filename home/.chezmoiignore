@@ -8,6 +8,9 @@
 {{-     end -}}
 {{-   end -}}
 {{- end }}
+{{ if has "neovim-dev" $selected -}}
+.config/nvim/lua/plugins/lsp/no-mason.lua
+{{ end -}}
 {{ if ne .chezmoi.os "darwin" -}}
 Library
 Library/**

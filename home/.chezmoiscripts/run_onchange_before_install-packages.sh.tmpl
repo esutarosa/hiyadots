@@ -2,7 +2,7 @@
 {{- $selected := list -}}
 {{- range .picks -}}{{- $selected = concat $selected . -}}{{- end -}}
 {{- $lists := dict -}}
-{{- range $key := list "pkg" "brew" "cask" "pacman" "aur" "nix" -}}
+{{- range $key := list "pkg" "brew" "cask" "pacman" "apt" "aur" "nix" -}}
 {{-   $names := list -}}
 {{-   range $name := $selected -}}
 {{-     $tool := index $.tools $name -}}
@@ -14,10 +14,13 @@ pkg="{{ $lists.pkg }}"
 brew="{{ $lists.brew }}"
 cask="{{ $lists.cask }}"
 pacman="{{ $lists.pacman }}"
+apt="{{ $lists.apt }}"
 aur="{{ $lists.aur }}"
 nix="{{ $lists.nix }}"
 
 failed=""
+sudo=""
+[ "$(id -u)" -eq 0 ] || sudo=sudo
 install() { # install <package> <command...>
   package=$1; shift
   "$@" "$package" || failed="$failed $package"
@@ -35,9 +38,10 @@ if [ "$(uname)" = Darwin ]; then
     brew list --cask "$p" >/dev/null 2>&1 || install "$p" brew install --cask
   done
 elif command -v pacman >/dev/null; then
-  for p in $pkg $pacman; do install "$p" sudo pacman -S --needed --noconfirm; done
+  [ -e /var/lib/pacman/sync/core.db ] || $sudo pacman -Sy
+  for p in $pkg $pacman; do install "$p" $sudo pacman -S --needed --noconfirm; done
   if [ -n "$aur" ] && ! command -v paru >/dev/null; then
-    sudo pacman -S --needed --noconfirm base-devel git
+    $sudo pacman -S --needed --noconfirm base-devel git
     build=$(mktemp -d)
     git clone https://aur.archlinux.org/paru-bin.git "$build" && (cd "$build" && makepkg -si --noconfirm)
     rm -rf "$build"
@@ -47,12 +51,16 @@ elif command -v pacman >/dev/null; then
   elif [ -n "$aur" ]; then
     failed="$failed $aur"
   fi
+elif command -v apt-get >/dev/null; then
+  export DEBIAN_FRONTEND=noninteractive
+  $sudo apt-get update
+  for p in $apt; do install "$p" $sudo apt-get install -y; done
 elif command -v nix >/dev/null; then
   for p in $pkg $nix; do
     install "nixpkgs#$p" nix --extra-experimental-features "nix-command flakes" profile install
   done
 else
-  echo "No supported package manager found (brew, pacman, nix). Skipping packages." >&2
+  echo "No supported package manager found (brew, pacman, apt, nix). Skipping packages." >&2
 fi
 
 if [ -n "$failed" ]; then

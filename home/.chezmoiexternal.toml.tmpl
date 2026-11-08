@@ -1,0 +1,24 @@
+{{- $selected := list -}}
+{{- range .picks -}}{{- $selected = concat $selected . -}}{{- end -}}
+{{- if and (has "zsh" $selected) (ne .chezmoi.os "darwin") }}
+[".local/share/powerlevel10k"]
+    type = "git-repo"
+    url = "https://github.com/romkatv/powerlevel10k.git"
+    refreshPeriod = "720h"
+    clone.args = ["--depth", "1"]
+{{- end }}
+{{- if and (has "neovim" $selected) (lookPath "apt-get") }}
+[".local/opt/nvim"]
+    type = "archive"
+    url = "https://github.com/neovim/neovim/releases/download/stable/nvim-linux-{{ if eq .chezmoi.arch "arm64" }}arm64{{ else }}x86_64{{ end }}.tar.gz"
+    stripComponents = 1
+    exact = true
+    refreshPeriod = "168h"
+[".local/bin/tree-sitter"]
+    type = "file"
+    url = "https://github.com/tree-sitter/tree-sitter/releases/latest/download/tree-sitter-linux-{{ if eq .chezmoi.arch "arm64" }}arm64{{ else }}x64{{ end }}.gz"
+    executable = true
+    refreshPeriod = "168h"
+    filter.command = "gzip"
+    filter.args = ["-d"]
+{{- end }}

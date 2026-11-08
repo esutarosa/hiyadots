@@ -1,14 +1,56 @@
 # group: prompt section. paths: files under $HOME owned by the tool.
 # pkg: same name in brew, pacman and nix. Otherwise use brew, cask, pacman, aur, nix.
+# apt: listed separately, Debian names and versions differ. Only tools meant for Debian have it.
 # keep_package: unselecting removes the config links, never the package.
 # Third-party brew formulae use full names, so Homebrew trusts that formula and not the whole tap.
+profiles:
+  default:
+    - zsh
+    - nushell
+    - alacritty
+    - ghostty
+    - tmux
+    - neovim
+    - neovim-dev
+    - yabai
+    - skhd
+    - kanata
+    - meslo-font
+    - git
+    - gh
+    - topgrade
+    - eza
+    - zoxide
+    - fzf
+    - ripgrep
+    - jq
+    - just
+    - lazygit
+    - fastfetch
+    - cloc
+    - imagemagick
+    - mkcert
+    - lftp
+    - lazysql
+    - mise
+    - go
+    - nvm
+    - node
+    - python
+    - llvm
+    - rust-analyzer
+    - flutter
+    - docker
+    - chromium
+    - codex
+  server: [zsh, tmux, neovim, git, gh, eza, zoxide, fzf, ripgrep, jq, lazygit, terminfo]
 tools:
   zsh:
     group: shell
     paths: [.zshrc, .zshenv, .zprofile, .p10k.zsh]
     brew: [powerlevel10k, zsh-autosuggestions, zsh-syntax-highlighting]
     pacman: [zsh, zsh-autosuggestions, zsh-syntax-highlighting]
-    aur: [zsh-theme-powerlevel10k]
+    apt: [zsh, zsh-autosuggestions, zsh-syntax-highlighting]
     nix: [zsh, zsh-powerlevel10k, zsh-autosuggestions, zsh-syntax-highlighting]
   nushell:
     group: shell
@@ -32,14 +74,21 @@ tools:
     group: terminal
     paths: [.config/tmux]
     pkg: [tmux, fzf]
+    apt: [tmux, fzf]
 
   neovim:
     group: editor
-    paths: [.config/nvim]
+    paths: [.config/nvim, .local/bin/nvim, .local/bin/tree-sitter]
     pkg: [neovim, fd]
-    brew: [luarocks, tree-sitter-cli, ripgrep, lazygit, node, go]
-    pacman: [luarocks, tree-sitter-cli, ripgrep, lazygit, nodejs, npm, go, python, base-devel, unzip]
-    nix: [luarocks, tree-sitter, ripgrep, lazygit, nodejs, go, python3, gcc, gnumake, unzip]
+    brew: [tree-sitter-cli, ripgrep]
+    pacman: [tree-sitter-cli, ripgrep, base-devel, unzip]
+    apt: [fd-find, ripgrep, gcc, make, unzip, curl] # neovim and tree-sitter come from GitHub releases, apt's are too old
+    nix: [tree-sitter, ripgrep, gcc, gnumake, unzip]
+  neovim-dev: # language servers and their runtimes
+    group: editor
+    brew: [luarocks, lazygit, node, go]
+    pacman: [luarocks, lazygit, nodejs, npm, go, python]
+    nix: [luarocks, lazygit, nodejs, go, python3]
 
   yabai:
     group: desktop
@@ -64,24 +113,27 @@ tools:
     group: cli
     paths: [.gitconfig, .config/git]
     pkg: [git]
+    apt: [git]
   gh:
     group: cli
     brew: [gh]
     pacman: [github-cli]
+    apt: [gh]
     nix: [gh]
+  terminfo: {group: cli, apt: [ncurses-term]} # lets Alacritty connect over ssh; Arch ships it with ncurses
   topgrade:
     group: cli
     paths: [.config/topgrade.toml]
     brew: [topgrade]
     aur: [topgrade-bin]
     nix: [topgrade]
-  eza: {group: cli, pkg: [eza]}
-  zoxide: {group: cli, pkg: [zoxide]}
-  fzf: {group: cli, paths: [.config/fzf], pkg: [fzf]}
-  ripgrep: {group: cli, pkg: [ripgrep]}
-  jq: {group: cli, pkg: [jq]}
+  eza: {group: cli, pkg: [eza], apt: [eza]}
+  zoxide: {group: cli, pkg: [zoxide], apt: [zoxide]}
+  fzf: {group: cli, paths: [.config/fzf], pkg: [fzf], apt: [fzf]}
+  ripgrep: {group: cli, pkg: [ripgrep], apt: [ripgrep]}
+  jq: {group: cli, pkg: [jq], apt: [jq]}
   just: {group: cli, pkg: [just]}
-  lazygit: {group: cli, pkg: [lazygit]}
+  lazygit: {group: cli, pkg: [lazygit], apt: [lazygit]}
   fastfetch: {group: cli, pkg: [fastfetch]}
   cloc: {group: cli, pkg: [cloc]}
   imagemagick: {group: cli, pkg: [imagemagick]}

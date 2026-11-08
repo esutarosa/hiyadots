@@ -4,12 +4,16 @@ fi
 
 for f in \
   /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme \
-  /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme; do
+  $HOME/.local/share/powerlevel10k/powerlevel10k.zsh-theme; do
   [[ -r $f ]] && source $f && break
 done
 
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+if [ -f ~/.fzf.zsh ]; then
+  source ~/.fzf.zsh
+elif (( $+commands[fzf] )); then
+  source <(fzf --zsh)
+fi
 
 [ -f "$HOME/.config/fzf/hiyashinsu-moondust" ] && export FZF_DEFAULT_OPTS_FILE="$HOME/.config/fzf/hiyashinsu-moondust"
 
@@ -45,7 +49,24 @@ if (( $+commands[brew] )); then
   alias pa='brew search'
   alias pc='brew cleanup'
   alias po='brew outdated'
+elif (( $+commands[apt-get] )); then
+  (( EUID == 0 )) || sudo_cmd=sudo
+  alias un="$sudo_cmd apt remove"
+  alias up="$sudo_cmd apt update && $sudo_cmd apt upgrade"
+  alias pl='apt list --installed'
+  alias pa='apt search'
+  alias pc="$sudo_cmd apt autoremove && $sudo_cmd apt clean"
+  alias po='apt list --upgradable'
+elif (( $+commands[pacman] )); then
+  (( EUID == 0 )) || sudo_cmd=sudo
+  alias un="$sudo_cmd pacman -Rns"
+  alias up="$sudo_cmd pacman -Syu"
+  alias pl='pacman -Q'
+  alias pa='pacman -Ss'
+  alias pc="$sudo_cmd pacman -Sc"
+  alias po='pacman -Qu'
 fi
+unset sudo_cmd
 
 alias ..='cd ..'
 alias ...='cd ../..'
@@ -100,12 +121,14 @@ bindkey "^[[B" history-search-forward
 
 for f in \
   /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh \
-  /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh; do
+  /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh \
+  /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh; do
   [[ -r $f ]] && source $f && break
 done
 for f in \
   /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
-  /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh; do
+  /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+  /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh; do
   [[ -r $f ]] && source $f && break
 done
 

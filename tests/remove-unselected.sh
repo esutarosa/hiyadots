@@ -28,7 +28,7 @@ run() {
     HOME="$home" PATH="$real_path" chezmoi --source "$repo" --config "$state/chezmoi.toml" \
       --persistent-state "$state/state.boltdb" --cache "$state/cache" --destination "$home" --no-tty "$@"
   }
-  cz init --promptDefaults \
+  cz init --promptDefaults --promptChoice profile=pick \
     --promptMultichoice 'shell=zsh/nushell' --promptMultichoice 'terminal=ghostty/alacritty/tmux' \
     --promptMultichoice 'desktop=kanata' --promptMultichoice 'cli=zoxide'
   cz apply --exclude=scripts
@@ -53,7 +53,7 @@ run() {
   cp "$home/calls" "$home/first-calls"
 
   echo shared >> "$home/.local/state/dots/selected"
-  cz init --prompt --promptDefaults \
+  cz init --prompt --promptDefaults --promptChoice profile=pick \
     --promptMultichoice 'shell=zsh' --promptMultichoice 'terminal=ghostty/tmux' \
     --promptMultichoice 'desktop=kanata' --promptMultichoice 'cli=zoxide'
   remove
@@ -85,10 +85,27 @@ check "Linux: unselected config link removed" absent "$home/.config/nushell/env.
 none="$work/none"
 mkdir -p "$none/home"
 if HOME="$none/home" chezmoi --source "$repo" --config "$none/chezmoi.toml" --persistent-state "$none/state.boltdb" \
-  --cache "$none/cache" --destination "$none/home" --no-tty init --promptDefaults > "$none/out" 2>&1; then
+  --cache "$none/cache" --destination "$none/home" --no-tty init --promptDefaults --promptChoice profile=pick > "$none/out" 2>&1; then
   echo "FAIL init with nothing selected must fail"; fails=$((fails + 1))
 else
   check "init with nothing selected fails" grep -q 'Select at least one tool' "$none/out"
+fi
+
+preset() { # preset <profile>: prints the config generated for it
+  dir="$work/preset-$1"
+  mkdir -p "$dir/home"
+  DOTS_PROFILE=$1 HOME="$dir/home" chezmoi --source "$repo" --config "$dir/chezmoi.toml" --persistent-state "$dir/state.boltdb" \
+    --cache "$dir/cache" --destination "$dir/home" --no-tty init --promptDefaults > "$dir/out" 2>&1
+}
+preset server
+config="$work/preset-server/chezmoi.toml"
+check "server: profile saved" grep -q 'profile = "server"' "$config"
+check "server: picks neovim and zsh" grep -Eq 'editor = \["neovim"\]' "$config"
+check "server: no desktop tools" grep -q 'desktop = \[\]' "$config"
+if preset nope; then
+  echo "FAIL unknown profile must fail"; fails=$((fails + 1))
+else
+  check "unknown profile fails" grep -q 'Unknown profile' "$work/preset-nope/out"
 fi
 
 echo "failed: $fails"

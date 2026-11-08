@@ -1,24 +1,34 @@
-{{- $tools := (include ".chezmoidata/tools.yaml" | fromYaml).tools -}}
-{{- $keys := list "pkg" "pacman" "aur" "nix" -}}
+{{- $catalog := include ".chezmoidata/tools.yaml" | fromYaml -}}
+{{- $tools := $catalog.tools -}}
+{{- $profiles := append (keys $catalog.profiles | sortAlpha) "pick" -}}
+{{- $profile := env "DOTS_PROFILE" -}}
+{{- if not $profile -}}{{- $profile = promptChoiceOnce $ "profile" "profile" $profiles "default" -}}{{- end -}}
+{{- if not (has $profile $profiles) -}}{{- fail (printf "Unknown profile %s, use one of: %s" $profile (join ", " $profiles)) -}}{{- end -}}
+{{- $preset := get $catalog.profiles $profile | default (list) -}}
+{{- $keys := list "pkg" "pacman" "apt" "aur" "nix" -}}
 {{- if eq .chezmoi.os "darwin" -}}{{- $keys = list "pkg" "brew" "cask" -}}{{- end -}}
 {{- $picks := dict -}}
 {{- range $group := list "shell" "terminal" "editor" "desktop" "cli" "dev" "apps" -}}
 {{-   $choices := list -}}
 {{-   $defaults := list -}}
+{{-   $chosen := list -}}
 {{-   range $name, $tool := $tools -}}
 {{-     if eq $tool.group $group -}}
 {{-       $offered := false -}}
 {{-       range $keys -}}{{- if hasKey $tool . -}}{{- $offered = true -}}{{- end -}}{{- end -}}
 {{-       if $offered -}}
 {{-         $choices = append $choices $name -}}
+{{-         if has $name $preset -}}{{- $chosen = append $chosen $name -}}{{- end -}}
 {{-         if and (hasKey $ "picks") (hasKey $.picks $group) -}}
 {{-           if has $name (index $.picks $group) -}}{{- $defaults = append $defaults $name -}}{{- end -}}
 {{-         end -}}
 {{-       end -}}
 {{-     end -}}
 {{-   end -}}
-{{-   if $choices -}}
+{{-   if and $choices (eq $profile "pick") -}}
 {{-     $_ := set $picks $group (promptMultichoiceOnce $ (printf "picks.%s" $group) $group $choices $defaults) -}}
+{{-   else if $choices -}}
+{{-     $_ := set $picks $group $chosen -}}
 {{-   end -}}
 {{- end -}}
 {{- $total := 0 -}}
@@ -28,6 +38,9 @@
 {{- $gitEmail := promptStringOnce $ "git.email" "git user.email" "" -}}
 sourceDir = {{ .chezmoi.workingTree | quote }}
 mode = "symlink"
+
+[data]
+profile = {{ $profile | quote }}
 
 [data.git]
 name = {{ $gitName | quote }}
