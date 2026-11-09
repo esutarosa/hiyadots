@@ -37,7 +37,7 @@
 {{- $gitName := promptStringOnce $ "git.name" "git user.name" "" -}}
 {{- $gitEmail := promptStringOnce $ "git.email" "git user.email" "" -}}
 sourceDir = {{ .chezmoi.workingTree | quote }}
-mode = "symlink"
+mode = {{ if eq $profile "server" }}"file"{{ else }}"symlink"{{ end }}
 
 [data]
 profile = {{ $profile | quote }}

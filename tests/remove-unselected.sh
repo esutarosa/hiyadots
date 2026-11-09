@@ -102,6 +102,7 @@ preset() { # preset <profile>: prints the config generated for it
 preset server
 config="$work/preset-server/chezmoi.toml"
 check "server: profile saved" grep -q 'profile = "server"' "$config"
+check "server: copies files instead of linking" grep -q 'mode = "file"' "$config"
 check "server: picks neovim and zsh" grep -Eq 'editor = \["neovim"\]' "$config"
 check "server: no desktop tools" grep -q 'desktop = \[\]' "$config"
 if preset nope; then

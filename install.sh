@@ -17,6 +17,7 @@ if ! command -v chezmoi >/dev/null; then
   sh -c "$(curl -fsLS https://get.chezmoi.io)" -- -b "$HOME/.local/bin"
 fi
 
+[ "${DOTS_PROFILE:-}" != server ] || set -- --force "$@"
 chezmoi init --apply --source "$repo" "$@"
 
 zsh_path=$(command -v zsh || true)
