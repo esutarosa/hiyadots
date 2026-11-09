@@ -6,4 +6,6 @@
 [ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
 command -v mise >/dev/null || exit 0
 mise install
+export PATH="$HOME/.cargo/bin:$PATH"
+command -v rustup >/dev/null && rustup toolchain install nightly --profile minimal --component rustfmt
 {{ end -}}
