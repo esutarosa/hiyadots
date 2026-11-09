@@ -1,0 +1,9 @@
+{{- $selected := list -}}
+{{- range .picks -}}{{- $selected = concat $selected . -}}{{- end -}}
+{{- if and (has "neovim" $selected) (eq .chezmoi.os "windows") -}}
+# lazy-lock.json hash: {{ include "dot_config/nvim/lazy-lock.json" | sha256sum }}
+$env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [Environment]::GetEnvironmentVariable("Path", "User")
+if (-not (Get-Command nvim -ErrorAction SilentlyContinue)) { exit 0 }
+nvim --headless "+Lazy! restore" +qa
+nvim --headless "+lua require('util.bootstrap').run()" +qa
+{{ end -}}

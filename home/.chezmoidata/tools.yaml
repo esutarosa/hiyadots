@@ -1,6 +1,7 @@
 # group: prompt section. paths: files under $HOME owned by the tool.
 # pkg: same name in brew, pacman and nix. Otherwise use brew, cask, pacman, aur, nix.
 # apt: listed separately, Debian names and versions differ. Only tools meant for Debian have it.
+# winget: Windows package ids. Only tools meant for Windows have it.
 # keep_package: unselecting removes the config links, never the package.
 # Third-party brew formulae use full names, so Homebrew trusts that formula and not the whole tap.
 profiles:
@@ -45,6 +46,7 @@ profiles:
     - zen
     - codex
   server: [zsh, tmux, neovim, git, gh, eza, zoxide, fzf, ripgrep, jq, lazygit, terminfo]
+  windows: [powershell, alacritty, meslo-font, neovim, git, gh, eza, zoxide, fzf, ripgrep, jq, lazygit]
 tools:
   zsh:
     group: shell
@@ -57,6 +59,10 @@ tools:
     group: shell
     paths: [.config/nushell, .config/starship, Library/Application Support/nushell]
     pkg: [nushell, starship]
+  powershell:
+    group: shell
+    paths: [.config/powershell, .config/starship]
+    winget: [Starship.Starship]
 
   ghostty:
     group: terminal
@@ -67,7 +73,8 @@ tools:
   alacritty: # Homebrew disabled the cask on 2026-09-01, on macOS the installer takes the GitHub build
     group: terminal
     keep_package: true
-    paths: [.config/alacritty]
+    paths: [.config/alacritty, AppData/Roaming/alacritty]
+    winget: [Alacritty.Alacritty]
     cask: [alacritty]
     pacman: [alacritty]
     nix: [alacritty]
@@ -84,6 +91,7 @@ tools:
     brew: [tree-sitter-cli, ripgrep]
     pacman: [tree-sitter-cli, ripgrep, base-devel, unzip]
     apt: [fd-find, ripgrep, gcc, make, unzip, curl] # neovim and tree-sitter come from GitHub releases, apt's are too old
+    winget: [Neovim.Neovim, sharkdp.fd, BurntSushi.ripgrep.MSVC, tree-sitter.tree-sitter-cli, BrechtSanders.WinLibs.POSIX.UCRT]
     nix: [tree-sitter, ripgrep, gcc, gnumake, unzip]
   neovim-dev: # language servers and their runtimes
     group: editor
@@ -109,17 +117,20 @@ tools:
     cask: [font-meslo-lg-nerd-font]
     pacman: [ttf-meslo-nerd]
     nix: [nerd-fonts.meslo-lg]
+    winget: [] # not in winget, the Windows package script installs it
 
   git:
     group: cli
     paths: [.gitconfig, .config/git]
     pkg: [git]
     apt: [git]
+    winget: [Git.Git]
   gh:
     group: cli
     brew: [gh]
     pacman: [github-cli]
     apt: [gh]
+    winget: [GitHub.cli]
     nix: [gh]
   terminfo: {group: cli, apt: [ncurses-term]} # lets Alacritty connect over ssh; Arch ships it with ncurses
   topgrade:
@@ -128,13 +139,13 @@ tools:
     brew: [topgrade]
     aur: [topgrade-bin]
     nix: [topgrade]
-  eza: {group: cli, pkg: [eza], apt: [eza]}
-  zoxide: {group: cli, pkg: [zoxide], apt: [zoxide]}
-  fzf: {group: cli, paths: [.config/fzf], pkg: [fzf], apt: [fzf]}
-  ripgrep: {group: cli, pkg: [ripgrep], apt: [ripgrep]}
-  jq: {group: cli, pkg: [jq], apt: [jq]}
+  eza: {group: cli, pkg: [eza], apt: [eza], winget: [eza-community.eza]}
+  zoxide: {group: cli, pkg: [zoxide], apt: [zoxide], winget: [ajeetdsouza.zoxide]}
+  fzf: {group: cli, paths: [.config/fzf], pkg: [fzf], apt: [fzf], winget: [junegunn.fzf]}
+  ripgrep: {group: cli, pkg: [ripgrep], apt: [ripgrep], winget: [BurntSushi.ripgrep.MSVC]}
+  jq: {group: cli, pkg: [jq], apt: [jq], winget: [jqlang.jq]}
   just: {group: cli, pkg: [just]}
-  lazygit: {group: cli, pkg: [lazygit], apt: [lazygit]}
+  lazygit: {group: cli, pkg: [lazygit], apt: [lazygit], winget: [JesseDuffield.lazygit]}
   fastfetch: {group: cli, pkg: [fastfetch]}
   cloc: {group: cli, pkg: [cloc]}
   imagemagick: {group: cli, pkg: [imagemagick]}

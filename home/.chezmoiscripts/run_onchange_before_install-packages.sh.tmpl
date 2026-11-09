@@ -1,3 +1,4 @@
+{{- if ne .chezmoi.os "windows" -}}
 #!/bin/sh
 {{- $selected := list -}}
 {{- range .picks -}}{{- $selected = concat $selected . -}}{{- end -}}
@@ -87,3 +88,4 @@ fi
 if [ -n "$failed" ]; then
   echo "Not installed:$failed" >&2
 fi
+{{ end -}}

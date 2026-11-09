@@ -7,6 +7,7 @@
 {{- $preset := get $catalog.profiles $profile | default (list) -}}
 {{- $keys := list "pkg" "pacman" "apt" "aur" "nix" -}}
 {{- if eq .chezmoi.os "darwin" -}}{{- $keys = list "pkg" "brew" "cask" -}}{{- end -}}
+{{- if eq .chezmoi.os "windows" -}}{{- $keys = list "winget" -}}{{- end -}}
 {{- $picks := dict -}}
 {{- range $group := list "shell" "terminal" "editor" "desktop" "cli" "dev" "apps" -}}
 {{-   $choices := list -}}
@@ -37,7 +38,7 @@
 {{- $gitName := promptStringOnce $ "git.name" "git user.name" "" -}}
 {{- $gitEmail := promptStringOnce $ "git.email" "git user.email" "" -}}
 sourceDir = {{ .chezmoi.workingTree | quote }}
-mode = {{ if eq $profile "server" }}"file"{{ else }}"symlink"{{ end }}
+mode = {{ if or (eq $profile "server") (eq .chezmoi.os "windows") }}"file"{{ else }}"symlink"{{ end }}
 
 [data]
 profile = {{ $profile | quote }}

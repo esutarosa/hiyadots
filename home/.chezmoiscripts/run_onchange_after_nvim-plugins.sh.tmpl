@@ -1,12 +1,11 @@
 {{- $selected := list -}}
 {{- range .picks -}}{{- $selected = concat $selected . -}}{{- end -}}
-{{- if has "neovim" $selected -}}
+{{- if and (has "neovim" $selected) (ne .chezmoi.os "windows") -}}
 #!/bin/sh
 # lazy-lock.json hash: {{ include "dot_config/nvim/lazy-lock.json" | sha256sum }}
 [ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
 export PATH="$HOME/.local/bin:$PATH"
 command -v nvim >/dev/null || exit 0
 nvim --headless "+Lazy! restore" +qa
-rm -rf "${XDG_CACHE_HOME:-$HOME/.cache}"/nvim/tree-sitter-* # the run above exits mid-install and leaves partial builds
 nvim --headless "+lua require('util.bootstrap').run()" +qa
 {{ end -}}

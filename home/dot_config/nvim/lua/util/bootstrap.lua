@@ -84,6 +84,10 @@ local function install_parsers()
 end
 
 function M.run()
+	-- the Lazy restore run before this one exits mid-install and leaves partial builds
+	for _, path in ipairs(vim.fn.glob(vim.fn.stdpath("cache") .. "/tree-sitter-*", false, true)) do
+		vim.fn.delete(path, "rf")
+	end
 	local report = {
 		mason = install_mason(),
 		parsers = install_parsers(),

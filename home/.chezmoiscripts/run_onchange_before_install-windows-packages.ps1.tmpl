@@ -1,0 +1,38 @@
+{{- if eq .chezmoi.os "windows" -}}
+{{- $selected := list -}}
+{{- range .picks -}}{{- $selected = concat $selected . -}}{{- end -}}
+{{- $names := list -}}
+{{- range $name := $selected -}}
+{{-   $tool := index $.tools $name -}}
+{{-   if and $tool (hasKey $tool "winget") -}}{{- $names = concat $names $tool.winget -}}{{- end -}}
+{{- end -}}
+$packages = @({{ range $i, $id := ($names | uniq) }}{{ if $i }}, {{ end }}{{ $id | squote }}{{ end }})
+$failed = @()
+
+foreach ($id in $packages) {
+  winget list --id $id --exact --accept-source-agreements *> $null
+  if ($LASTEXITCODE -eq 0) { continue }
+  winget install --id $id --exact --silent --accept-package-agreements --accept-source-agreements
+  if ($LASTEXITCODE -ne 0) { $failed += $id }
+}
+{{ if has "meslo-font" $selected }}
+$fonts = Join-Path $env:LOCALAPPDATA "Microsoft\Windows\Fonts"
+if (-not (Test-Path (Join-Path $fonts "MesloLGSNerdFontMono-Regular.ttf"))) {
+  try {
+    $work = Join-Path $env:TEMP ("meslo-" + [guid]::NewGuid())
+    New-Item -ItemType Directory -Force $work, $fonts | Out-Null
+    Invoke-WebRequest -UseBasicParsing -OutFile "$work\Meslo.zip" "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip"
+    Expand-Archive "$work\Meslo.zip" $work
+    Get-ChildItem $work -Filter "MesloLGSNerdFontMono-*.ttf" | ForEach-Object {
+      $target = Join-Path $fonts $_.Name
+      Copy-Item $_.FullName $target -Force
+      New-ItemProperty -Force -PropertyType String -Name "$($_.BaseName) (TrueType)" -Value $target -Path "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts" | Out-Null
+    }
+    Remove-Item -Recurse -Force $work
+  } catch {
+    $failed += "meslo-font"
+  }
+}
+{{ end }}
+if ($failed) { Write-Warning "Not installed: $($failed -join ' ')" }
+{{ end -}}

@@ -1,10 +1,17 @@
 {{- $selected := list -}}
 {{- range .picks -}}{{- $selected = concat $selected . -}}{{- end -}}
+{{- $keep := list -}}
+{{- range $name := $selected -}}
+{{-   $tool := index $.tools $name -}}
+{{-   if and $tool (hasKey $tool "paths") -}}{{- $keep = concat $keep $tool.paths -}}{{- end -}}
+{{- end -}}
 {{- range $name, $tool := .tools -}}
 {{-   if and (not (has $name $selected)) (hasKey $tool "paths") -}}
 {{-     range $tool.paths }}
+{{-       if not (has . $keep) }}
 {{ . }}
 {{ . }}/**
+{{-       end -}}
 {{-     end -}}
 {{-   end -}}
 {{- end }}
@@ -14,4 +21,12 @@
 {{ if ne .chezmoi.os "darwin" -}}
 Library
 Library/**
+{{- end }}
+{{ if ne .chezmoi.os "windows" -}}
+AppData
+AppData/**
+{{- else -}}
+.hushlogin
+.local
+.local/**
 {{- end }}

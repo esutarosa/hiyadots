@@ -1,3 +1,4 @@
+{{- if ne .chezmoi.os "windows" -}}
 #!/bin/sh
 # Only tools selected on the previous run and unselected now are removed. DOTS_REMOVE=yes skips the question.
 {{- $selected := list -}}
@@ -121,3 +122,4 @@ save_selection
 if [ -n "$failed" ]; then
   echo "Not removed:$failed" >&2
 fi
+{{ end -}}
