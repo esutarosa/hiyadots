@@ -1,0 +1,3 @@
+.config/nvim/lua/plugins/editor/telescope.lua
+.config/nvim/lua/plugins/editor/close-buffers.lua
+.config/nvim/lua/plugins/ui/lazygit.lua

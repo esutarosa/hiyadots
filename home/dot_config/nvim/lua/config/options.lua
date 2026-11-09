@@ -14,5 +14,5 @@ vim.opt.mouse = ""
 vim.opt.formatoptions:append({ "r" })
 
 vim.g.lazyvim_prettier_needs_config = false
-vim.g.lazyvim_picker = "telescope"
+vim.g.lazyvim_picker = "snacks"
 vim.g.lazyvim_cmp = "blink.cmp"
