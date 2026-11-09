@@ -667,6 +667,7 @@ source ~/.config/nushell/themes/hiyashinsu-moondust.nu
 
 source ~/.cache/nushell-init/zoxide.nu
 source ~/.cache/nushell-init/starship.nu
+source ~/.cache/nushell-init/mise.nu
 
 alias cd = z
 alias zf = zi

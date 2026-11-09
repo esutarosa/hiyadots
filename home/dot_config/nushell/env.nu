@@ -41,14 +41,9 @@ path add ($env.HOME | path join ".bun/bin")
 path add $env.GOBIN
 path add ($env.HOME | path join ".cargo/bin")
 
-let nvm_default = ($env.HOME | path join ".nvm/alias/default")
-if ($nvm_default | path exists) {
-    path add ($env.HOME | path join $".nvm/versions/node/v(open --raw $nvm_default | str trim)/bin")
-}
-
 let init_dir = ($env.HOME | path join ".cache/nushell-init")
 mkdir $init_dir
-for tool in [[name command]; [zoxide { zoxide init nushell }] [starship { starship init nu }]] {
+for tool in [[name command]; [zoxide { zoxide init nushell }] [starship { starship init nu }] [mise { mise activate nu }]] {
     let file = ($init_dir | path join $"($tool.name).nu")
     if (which $tool.name | is-not-empty) { do $tool.command | save -f $file } else { "" | save -f $file }
 }

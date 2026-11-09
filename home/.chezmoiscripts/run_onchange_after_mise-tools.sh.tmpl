@@ -1,0 +1,9 @@
+{{- $selected := list -}}
+{{- range .picks -}}{{- $selected = concat $selected . -}}{{- end -}}
+{{- if and (has "mise" $selected) (ne .chezmoi.os "windows") -}}
+#!/bin/sh
+# mise config hash: {{ include "dot_config/mise/config.toml" | sha256sum }}
+[ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+command -v mise >/dev/null || exit 0
+mise install
+{{ end -}}

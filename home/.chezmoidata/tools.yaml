@@ -34,9 +34,6 @@ profiles:
     - lftp
     - lazysql
     - mise
-    - go
-    - nvm
-    - node
     - python
     - llvm
     - rust-analyzer
@@ -95,7 +92,7 @@ tools:
     nix: [tree-sitter, ripgrep, gcc, gnumake, unzip]
   neovim-dev: # language servers and their runtimes
     group: editor
-    brew: [luarocks, lazygit, node, go]
+    brew: [luarocks, lazygit]
     pacman: [luarocks, lazygit, nodejs, npm, go, python]
     nix: [luarocks, lazygit, nodejs, go, python3]
 
