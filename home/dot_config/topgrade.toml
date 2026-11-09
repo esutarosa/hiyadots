@@ -4,6 +4,7 @@ disable = [
   "system",
   "containers",
   "pip3",
+  "tmux",
   "git_repos",
   "chezmoi",
   "skills",

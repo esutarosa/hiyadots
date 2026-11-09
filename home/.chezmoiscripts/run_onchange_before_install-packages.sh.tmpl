@@ -26,6 +26,22 @@ install() { # install <package> <command...>
   "$@" "$package" || failed="$failed $package"
 }
 
+install_alacritty() { # Homebrew disabled the cask, so this takes the upstream build
+  [ -d /Applications/Alacritty.app ] && return 0
+  tag=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/alacritty/alacritty/releases/latest) || return 1
+  tag=${tag##*/}
+  work=$(mktemp -d)
+  status=1
+  if curl -fsSL -o "$work/alacritty.dmg" "https://github.com/alacritty/alacritty/releases/download/$tag/Alacritty-$tag.dmg" &&
+    hdiutil attach -quiet -nobrowse -readonly -mountpoint "$work/mnt" "$work/alacritty.dmg"; then
+    cp -R "$work/mnt/Alacritty.app" /Applications/
+    status=$?
+    hdiutil detach -quiet "$work/mnt"
+  fi
+  rm -rf "$work"
+  return $status
+}
+
 if [ "$(uname)" = Darwin ]; then
   if ! command -v brew >/dev/null && [ ! -x /opt/homebrew/bin/brew ]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -35,7 +51,12 @@ if [ "$(uname)" = Darwin ]; then
     brew list --formula "${p##*/}" >/dev/null 2>&1 || install "$p" brew install --formula
   done
   for p in $cask; do
-    brew list --cask "$p" >/dev/null 2>&1 || install "$p" brew install --cask
+    brew list --cask "$p" >/dev/null 2>&1 && continue
+    if [ "$p" = alacritty ]; then
+      install_alacritty || failed="$failed alacritty"
+    else
+      install "$p" brew install --cask
+    fi
   done
 elif command -v pacman >/dev/null; then
   [ -e /var/lib/pacman/sync/core.db ] || $sudo pacman -Sy

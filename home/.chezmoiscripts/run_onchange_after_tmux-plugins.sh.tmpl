@@ -2,10 +2,15 @@
 {{- range .picks -}}{{- $selected = concat $selected . -}}{{- end -}}
 {{- if has "tmux" $selected -}}
 #!/bin/sh
-# tmux.conf hash: {{ include "dot_config/tmux/tmux.conf" | sha256sum }}
+# plugins.lock hash: {{ include "dot_config/tmux/plugins.lock" | sha256sum }}
 plugins="$HOME/.config/tmux/plugins"
-sed -n "s/^set -g @plugin '\(.*\)'$/\1/p" "$HOME/.config/tmux/tmux.conf" | while read -r plugin; do
-  dir="$plugins/${plugin##*/}"
-  [ -d "$dir" ] || git clone --depth 1 "https://github.com/$plugin" "$dir" || echo "Not installed: $plugin" >&2
-done
+pin() { # pin <owner/repo> <commit>
+  dir="$plugins/${1##*/}"
+  [ -d "$dir/.git" ] || git clone -q --depth 1 "https://github.com/$1" "$dir" || return 1
+  git -C "$dir" cat-file -e "$2" 2>/dev/null || git -C "$dir" fetch -q --depth 1 origin "$2" || return 1
+  git -C "$dir" checkout -q "$2"
+}
+while read -r plugin commit; do
+  pin "$plugin" "$commit" || echo "Not installed: $plugin" >&2
+done < "$HOME/.config/tmux/plugins.lock"
 {{ end -}}

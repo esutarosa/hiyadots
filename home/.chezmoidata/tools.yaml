@@ -42,6 +42,7 @@ profiles:
     - flutter
     - docker
     - chromium
+    - zen
     - codex
   server: [zsh, tmux, neovim, git, gh, eza, zoxide, fzf, ripgrep, jq, lazygit, terminfo]
 tools:
@@ -63,7 +64,7 @@ tools:
     cask: [ghostty, font-plemol-jp-nf]
     pacman: [ghostty]
     nix: [ghostty]
-  alacritty: # legacy: Homebrew disabled the cask on 2026-09-01, a new Mac needs the GitHub build
+  alacritty: # Homebrew disabled the cask on 2026-09-01, on macOS the installer takes the GitHub build
     group: terminal
     keep_package: true
     paths: [.config/alacritty]
@@ -182,6 +183,10 @@ tools:
     cask: [chromium]
     pacman: [chromium]
     nix: [chromium]
+  zen:
+    group: apps
+    cask: [zen]
+    aur: [zen-browser-bin]
   codex:
     group: apps
     cask: [codex]

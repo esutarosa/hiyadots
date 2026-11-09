@@ -91,6 +91,8 @@ else
   check "init with nothing selected fails" grep -q 'Select at least one tool' "$none/out"
 fi
 
+check "tmux: every plugin is pinned" sh -c "sed -n \"s/^set -g @plugin '\\(.*\\)'\$/\\1/p\" '$repo/home/dot_config/tmux/tmux.conf' | while read -r p; do grep -q \"^\$p \" '$repo/home/dot_config/tmux/plugins.lock' || exit 1; done"
+
 preset() { # preset <profile>: prints the config generated for it
   dir="$work/preset-$1"
   mkdir -p "$dir/home"
